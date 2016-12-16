@@ -1,0 +1,40 @@
+	Device 16F84
+
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+counter equ 12
+pcl equ 2
+flanke equ 0CH
+input equ 0
+output equ 1
+
+init	bsf status, bank ;schaltet auf Bank1
+		bsf PortA, INPUT ;RA0 Eing in TrisA
+		bcf PortA, OUTPUT ;RA1 Ausg
+		bcf status, bank ;schaltet auf Bank0
+top		movf   flanke, w	;lädt vorherigen flankenwert in w
+		xorwf   PortA, w	;xor mit PortA um Flankenwechsel zu erkennen
+		andLw   00000001B	;abschneiden der irrelevanten bits
+		btfsc   status, 2 	;wenn Z=0 dann Flanke gefunden
+		goto   top			;z!=0 also goto top
+		movLw   00000001B	;lädt Maske in w ;sollte eigentlich noch drinstehen
+		xorwf   Flanke		;xor von Flanke mit Maske
+		btfss   Flanke, 0	;wenn bit0 = 0, dann fallende flanke
+		goto   top			;also goto top
+							;steigende Flanke, also weitermachen
+		;primitive lösung
+		;btfss PortA, OUTPUT	;aktueller Pegel checken
+		;goto outputH		;wenn low dann high 
+		;goto outputL		;wenn high dann low
+		
+;outputH	bsf PortA, OUTPUT
+;		goto top
+;outputL	bcf PortA, OUTPUT
+;		goto top
+
+		;schlaue Lösung
+		movLw 00000010B
+		xorwf PortA
+		goto top

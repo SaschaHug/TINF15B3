@@ -1,0 +1,109 @@
+	Device 16F84
+
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+counter equ 12
+pcl equ 2
+flanke equ 0DH
+Position equ 0EH
+
+
+		bsf status, bank 	;schaltet auf Bank1
+		
+		bcf PortA, 3 		;setzt bit 3 auf 0 (Ausgang) in TrisA
+		clrf PortB 			;setzt PortB komplett auf 0
+		
+		bcf status, bank 	;schaltet auf Bank0
+
+Reset   movlw   0
+		movwf   counter
+		
+warte   
+			movf counter,w		; counter wird in w geladen
+			btfss Position,0	; Wenn Bit 0 von Position nicht gesetzt ist, dann swap
+			swapf counter,w		; schreibe vertauschte HQuartett mit LQuartett in Counter nach w 
+			bsf	PortA,7			; setze Bit7 in PortA
+			bsf PortA,6			; setze Bit6 in PortA
+			call tabelle		; Ausgabe Berechnung
+			movwf PortB			; schreibe Ergebniss von tabelle nach PortB
+			btfss Position,0	; Wenn Bit0 in Position gesetzt ist springe (nach Lowbyte)
+			goto Highbyte		
+			goto Lowbyte
+Highbyte 	bcf PortA,7			; setze Bit7 in PortA auf 0
+			goto nextpos
+
+Lowbyte		bcf PortA,6			; setze Bit6 in PortA auf 0
+nextpos		incf Position		; incrementiere Position
+		
+		btfsc   PortA, 1 		; reset abfrage
+		goto   reset
+		btfsc   PortA, 2 		; inhibit abfrage
+		goto   warte			
+		movf   flanke, w		; schreibe Wert von flanke nach w
+		xorwf   PortA, w		; Schreibe Ergebnis von XOR und PortA nach w
+		andLw   00000001B		; schneide in w die Bits 7-1 ab, nur Bit 0 ist relevant
+		btfsc   status, 2 		; wenn Z=0 (das bedeutet der Wert von w ist nicht null) dann Flanke gefunden
+		goto   warte
+		movLw   00000001B		; schreibe 1B nach w
+		xorwf   flanke			; schreibe Ergebnis von XOR nach Flanke, (0 = fallende Flanke; 1 = steigende Flanke) 
+		btfss   flanke, 0		; wenn steigende Flanke -> springe
+		goto   warte			; wenn fallende Flanke -> zurück zu warte
+		bcf   PortA, 3 			; carryout auf 0
+		incf   counter 			
+
+		;this for BCD
+		btfss   counter, 3
+		goto   warte
+		btfss   counter, 1
+		goto  warte
+		;untere vier bit sind 10
+		movlw   6 ;10 + 6 = 16
+		addwf  counter
+		movLw  0A0H
+		xorwf  counter, w
+		btfss   status, 2
+		goto   warte
+		clrf  counter
+		bsf    PortA, 3
+		goto   warte
+		
+setze6 	bcf		PortA,6
+		bsf		PortA,7
+		movLw	2
+		addwf 	pcl
+		
+setze7 	bsf		PortA,6
+		bcf		PortA,7
+		
+anzeige movf 	counter,w
+		call tabelle
+		btfsc PortA,6
+		call setze6
+		call setze7
+		movwf	PortB
+		return
+		
+	
+tabelle
+		andlw  15     ;nur untere 4 Bits sind g?ltig
+		addwf  pcl    ;Index zum Programmz?gler addieren
+		retlw  00111111B	;0      ;wenn index 0 war, wird dieser Wert zur?ckgegeben
+		retlw  00000110B	;1      ;bei Index 1 dieser wert. 
+		retlw  01011011B	;2      
+		retlw  01001111B	;3 
+		retlw  01100110B	;4 
+		retlw  01101101B	;5 
+		retlw  01111101B	;6 
+		retlw  00000111B	;7 
+		retlw  01111111B	;8 
+		retlw  01101111B	;9 
+		retlw  01110110B	;H 
+		retlw  01111001B	;E 
+		retlw  00111000B	;L 
+		retlw  01110011B	;P 
+		retlw  10000000B	;.
+		retlw  0			;blank
+
+end

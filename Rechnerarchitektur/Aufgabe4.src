@@ -1,0 +1,49 @@
+	Device 16F84
+
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+counter equ 12
+pcl equ 2
+flanke equ 0CH
+counter equ 0DH
+f equ 0EH
+input equ 0
+output equ 1
+
+init	bsf status, bank ;schaltet auf Bank1
+		bsf PortA, INPUT ;RA0 Eing in TrisA
+		bcf PortA, OUTPUT ;RA1 Ausg
+		bcf status, bank ;schaltet auf Bank0
+		movLw	0
+		movwf	counter
+top		movf   flanke, w	;lädt vorherigen flankenwert in w
+		xorwf   PortA, w	;xor mit PortA um Flankenwechsel zu erkennen
+		andLw   00000001B	;abschneiden der irrelevanten bits
+		btfsc   status, 2 	;wenn Z=0 dann Flanke gefunden
+		goto   top			;z!=0 also goto top
+count	
+		incf 	counter		
+		movf   flanke, w	;lädt vorherigen flankenwert in w
+		xorwf   PortA, w	;xor mit PortA um Flankenwechsel zu erkennen
+		andLw   00000001B	;abschneiden der irrelevanten bits
+		btfss	status, 2 	;wenn Z=0 dann Flanke gefunden
+		goto   count		;z!=0 also goto count
+		
+back	
+		movf 	counter, w
+		movwf	f
+		rrf		f
+		bcf		f, 7
+		;durch 2 geteilt
+		movlw	00000001B
+		xorwf 	PortA
+recount
+		nop
+		nop
+		nop
+		nop
+		decfsz	f
+		goto recount
+		goto back

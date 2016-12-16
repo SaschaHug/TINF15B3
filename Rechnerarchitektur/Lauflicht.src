@@ -1,0 +1,46 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                           ;
+; Lauflicht                                                                                 ;
+; Gabriel Zachmann                                                                          ;
+; 10.12.2016                                                                                ;
+;                                                                                           ;
+; Alle Angaben ohne Gewähr                                                                  ;
+;                                                                                           ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	Device 16F84
+
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+HALT equ PortA, 1
+StartStop equ PortA, 0
+
+init	bsf 	status, bank 	;schaltet auf Bank1
+		clrf	PortB			;setzt TrisB auf 0, 0===Ausgang
+								;PortA ist Eingang, da das der default value ist (muss nicht explizit gesetzt werden)
+		bcf 	status, bank 	;schaltet auf Bank0
+		
+start	clrf	PortB			;setzt PortB auf 0 (alle LEDs aus)
+		bsf		status, 0		;setzt carry flag auf 1 (beim shiften wird der Wert des carryflags auf LED0 geshiftet)
+
+startC	btfsc	StartStop		;Wenn der Schalter geschlossen ist, ist StartStop = 0
+		goto 	start			;Wenn StartStop = 1 (also Schalter offen): gehe zurück zu start
+
+pause	btfsc	HALT			;Wenn der Schalter geöffnet ist, ist HALT = 1
+		goto 	startC			;Wenn HALT = 1 (also Schalter offen): gehe zurück zum Start Check
+	
+shift							;Wenn beide Schalter geschlossen sind wander
+		btfsc	PortB, 7		;Wenn LED7 leuchtet, direkt auf 0 springen
+		goto 	spring
+		nop						;for timing reasons
+		rlf		PortB, 1		;The contents of register ’f’ are rotated one bit to the left through the Carry Flag. If ’d’ is 0, the result is placed in the W register. If ’d’ is 1, the result is stored back in register ’f’.
+		goto	startC			;And we start again
+		
+spring 	clrf	PortB			;setzt PortB auf 0 (alle LEDs aus)
+		bsf		PortB, 0		;LED0 an
+		goto 	startC
+
+		
+		end

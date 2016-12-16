@@ -1,0 +1,27 @@
+	Device 16F84
+
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+pcl equ 2
+FSR equ 4
+indirect equ 0
+
+top		movlw 10H
+		movwf FSR
+		clrw
+loop	movwf indirect
+		addlw 1
+		incf FSR
+		btfss FSR, 5
+		goto loop
+sum		movlw 10H
+		movwf FSR
+		clrw
+sumloop	addwf indirect, w
+		incf FSR
+		btfss FSR, 5
+		goto sumloop
+		
+	end

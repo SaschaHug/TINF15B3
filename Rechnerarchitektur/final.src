@@ -1,0 +1,79 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Da gibts ne Zeichnung für @Waldemar
+;
+; Gabriel Zachmann
+; 12.12.16
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	Device 16F84
+
+PCL equ 2
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+A equ 0CH
+B equ 0DH
+S equ 0EH
+
+; |S1|S0|C            |
+; |--|--|-------------|
+; |0 |0 |A AND B      |
+; |0 |1 |A OR B       |
+; |1 |0 |A XOR B      |
+; |1 |1 |2er Kompl. A |
+
+init		bsf 	status, bank 	;schaltet auf Bank1
+			movlw	11110000B		;lädt Maske in w
+			movwf	PortA			;setzt TrisA0-3 auf 0, 0===Ausgang
+									;PortB ist Eingang, da das der default value ist (muss nicht explizit gesetzt werden)
+			bcf 	status, bank 	;schaltet auf Bank0
+			
+go			movf	PortB, w
+			ANDlw	15
+			movwf	A
+			movf	PortB, w	
+			ANDlw	11110000B
+			movwf	B
+			swapf	B
+			
+			movf	PortA, w
+			movwf	S
+			rlf		S
+			rlf		S
+			rlf		S
+			movf	S, w 
+			ANDlw	00000011B
+			addwf	pcl
+			goto	Akomp
+			goto	AxorB
+			goto	AorB
+			goto	AandB
+			
+AandB		movf	A, w
+			andwf	B, w
+			iorlw	11000000B
+			movwf	PortA
+			goto 	go
+
+AorB		movf	A, w
+			iorwf	B, w
+			iorlw	10000000B
+			movwf	PortA
+			goto 	go
+			
+AxorB		movf	A, w
+			xorwf	B, w
+			andlw	3FH
+			iorlw	01000000B
+			movwf	PortA
+			goto 	go
+			
+Akomp		comf	A
+			incf	A
+			movf	A, w
+			andlw	0FH
+			;iorlw	0
+			movwf 	PortA
+			goto 	go

@@ -1,0 +1,80 @@
+	Device 16F84
+
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+pcl equ 2
+counter equ 12
+flanke equ 0DH
+
+		 bsf status, bank ;schaltet auf Bank1
+		 ;movlw 11110111B ;Maske f?r TRISA
+		 ;movewf PortA ;l?dt in TRISA
+		 bcf PortA, 3 ;setzt bit 3 auf 0 (Ausgang) in TrisA
+		 clrf PortB ;setzt PortB komplett auf 0
+		 bcf status, bank ;schaltet auf Bank0
+
+Reset 	movLw 	0
+		movwf 	counter
+warte 	btfsc 	PortA, 1 ; reset abfrage
+		goto 	reset
+		movfw  	counter	;4       ;index ins w-register
+		call 	tabelle  ; in die Tabelle springen
+		movwf 	portB     ;Wert aus tabelle auf Port ausgeben	
+		btfsc 	PortA, 2 ; inhibit abfrage
+		goto 	warte
+		movf 	flanke, w
+		xorwf 	PortA, w
+		andLw 	00000001B
+		btfsc 	status, 2 ; wenn Z=0 dann Flanke gefunden
+		goto 	warte
+		movLw 	00000001B
+		xorwf 	Flanke
+		btfss 	Flanke, 0
+		goto 	warte
+		bcf 	PortA, 3 ;carryout auf 0
+		incf 	counter 
+		;this for BCD
+		btfss 	counter, 3
+		goto 	warte
+		btfss 	counter, 1
+		goto	warte
+		;untere vier bit sind 10
+		movlw 	6 ;10 + 6 = 16
+		addwf	counter
+		movLw	0A0H
+		xorwf	counter, w
+		btfss 	status, 2
+		goto 	warte
+		clrf	counter
+		bsf		PortA, 3
+		goto 	warte
+		; end this for BCD
+		; below for binary
+		;btfss 	status, 2
+		;goto 	warte
+		;bsf 	portA, 3 ;Carryout setzen
+		;goto 	warte
+
+tabelle
+		andlw  15     ;nur untere 4 Bits sind gültig
+		addwf  pcl    ;Index zum Programmzägler addieren
+		retlw  00111111B	;0      ;wenn index 0 war, wird dieser Wert zurückgegeben
+		retlw  00000110B	;1      ;bei Index 1 dieser wert. Die werte 0,1,2 usw müssen
+		retlw  01011011B	;2      ;durch die gewümschte Bitkombination ersetzt werden
+		retlw  01001111B	;3 
+		retlw  01100110B	;4 
+		retlw  01101101B	;5 
+		retlw  01111101B	;6 
+		retlw  00000111B	;7 
+		retlw  01111111B	;8 
+		retlw  01101111B	;9 
+		retlw  01110110B	;H 
+		retlw  01111001B	;E 
+		retlw  00111000B	;L 
+		retlw  01110011B	;P 
+		retlw  10000000B	;.
+		retlw  0			;blank
+		
+end

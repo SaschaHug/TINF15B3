@@ -1,0 +1,25 @@
+
+	Device 16F84
+
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+hwert1 equ 0CH
+lwert1 equ 0DH
+
+	movlw 80
+	movwf LWert1
+
+	clrf HWert1
+	bcf status, 0
+	movf LWert1, w
+	rlf LWert1
+	rlf HWert1
+	rlf LWert1
+	rlf HWert1
+	addwf LWert1
+	btfsc status, 0
+	incf HWert1
+	
+	end

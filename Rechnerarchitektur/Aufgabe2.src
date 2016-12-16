@@ -1,0 +1,42 @@
+	Device 16F84
+	
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+pcl equ 2
+	
+	bsf status, bank ;schaltet auf Bank1
+	movlw 11111111B ;Maske f?r TRISA
+	movwf PortA ;l?dt in TRISA
+	clrf PortB ;setzt PortB komplett auf 0
+	bcf status, bank ;schaltet auf Bank0
+	
+	
+	
+anfang	movfw  PortA	;4       ;index ins w-register
+		call tabelle  ; in die Tabelle springen
+		movwf portB     ;Wert aus tabelle auf Port ausgeben
+		goto anfang
+
+tabelle
+		andlw  15     ;nur untere 4 Bits sind gültig
+		addwf  pcl    ;Index zum Programmzägler addieren
+		retlw  00111111B	;0      ;wenn index 0 war, wird dieser Wert zurückgegeben
+		retlw  00000110B	;1      ;bei Index 1 dieser wert. Die werte 0,1,2 usw müssen
+		retlw  01011011B	;2      ;durch die gewümschte Bitkombination ersetzt werden
+		retlw  01001111B	;3 
+		retlw  01100110B	;4 
+		retlw  01101101B	;5 
+		retlw  01111101B	;6 
+		retlw  00000111B	;7 
+		retlw  01111111B	;8 
+		retlw  01101111B	;9 
+		retlw  01110110B	;H 
+		retlw  01111001B	;E 
+		retlw  00111000B	;L 
+		retlw  01110011B	;P 
+		retlw  10000000B	;.
+		retlw  0			;blank
+	
+	

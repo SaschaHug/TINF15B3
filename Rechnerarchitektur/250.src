@@ -1,0 +1,17 @@
+
+	Device 16F84
+
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+count equ 0DH
+
+		movlw 	62
+		movwf	count
+loop	nop
+		decfsz	count
+		goto 	loop
+		nop
+		
+		end
