@@ -54,19 +54,20 @@ nextpos		incf Position		; incrementiere Position
 		incf   counter 			
 
 		;this for BCD
-		btfss   counter, 3
+		btfss   counter, 3		; springe wenn Bit3 gesetzt ist (ab 8)	
 		goto   warte
-		btfss   counter, 1
+		btfss   counter, 1		; springe wenn Bit1 gesetzt ist (ab 2 -> 2 + 8 = 10)
 		goto  warte
+		
 		;untere vier bit sind 10
-		movlw   6 ;10 + 6 = 16
-		addwf  counter
-		movLw  0A0H
-		xorwf  counter, w
-		btfss   status, 2
-		goto   warte
-		clrf  counter
-		bsf    PortA, 3
+		movlw   6 				; schreibe 6 nach w 
+		addwf  counter			; addiere 6 zu counter (16 == 0001 0000B)
+		movLw  0A0H				; schreibe 1010 0000B nach w
+		xorwf  counter, w		; schreibe Ergebnis von w XOR counter nach w  
+		btfss   status, 2		; springe wenn Z gesetzt ist
+		goto   warte			
+		clrf  counter			; setzte counter auf 0
+		bsf    PortA, 3			; setze Bit3 in PortA
 		goto   warte
 		
 setze6 	bcf		PortA,6
