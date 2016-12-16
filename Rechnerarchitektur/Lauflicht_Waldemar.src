@@ -1,0 +1,45 @@
+	Device 16F84
+;**************************
+;	Definitionen
+;**************************
+Status equ 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+Licht equ 0CH
+
+;**************************
+;	Initialisierung
+;**************************
+	bsf status,bank		; auf Bank 1 umschalten
+	
+	clrf PortB			; PortB auf Ausgang schalten (alles auf 0)
+	movlw 00000011B		; Bitmaske für Bit0 + Bit1 in PortA auf Eingang, Rest auf Ausgang schalten
+	movwf PortA			; umschalten
+	
+	bcf status,bank		; auf Bank 0 umschalten
+
+;**************************
+;	Programm
+;**************************	
+Reset
+	clrf Licht			; Licht leeren
+	rlf Licht			; Licht nach rechts schiften -> Im Carry steht jetzt definitif 0
+	bsf Licht,0			; Bit0 in Licht setzen
+	
+
+Loop
+	btfss PortA,0		; springe wenn Bit0 in PortA gesetzt ist -> Schalter ist geschlossen
+	goto Reset			; resete wenn Bit0 in PortA auf 0 ist
+	btfss PortA,1		; springe wenn Bit1 in PortA gesetzt ist -> Schalter ist geschlossen
+	goto Pause			; 
+	movf Licht, w		; kopiere Licht nach w
+	movwf PortB			; schreibe w nach PortB -> LED wird angezeigt
+	btfsc Licht,7		; springe wenn Bit7 in PortA 0 ist
+	rlf Licht			; Wenn Bit7 gesetzt ist muss 2 mal geschiftet werden, damit keine Lücke im Lauflicht entsteht (da alles auf 0) 
+	rlf Licht			; schifte nach rechts durch das Carryflag
+	
+Pause
+	btfsc PortA,1		; springe wenn PorA Bit1 0 ist und mache weiter Pause
+	goto Loop			; kehre zur Lauflichtschleife zurück
+	goto Pause
