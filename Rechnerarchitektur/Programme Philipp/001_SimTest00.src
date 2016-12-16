@@ -17,20 +17,21 @@ rp0        Equ       5
           org     0
 
 COLD    
-START     bsf 3,5			;RP0 auf 1 => Bank 1 anw?hlen
-	  movlw     11111110B		;TRIS-Maske
-	  movwf     PORT_B		;jetzt ist RB0 Ausgang, der Rest Eingan
-	  bcf status,rp0
+START     
+	bsf status,rp0 		; RP0 auf 1 => Bank 1
+	movlw 11111110B		; TRIS-Maske
+	movwf PORT_B		; jetzt ist RB0 Ausgang, der Rest Eingan
+	bcf status,rp0		; RP0 auf 1 => Bank 0 
 	  
 
 loop
-	  bsf       port_b,0
-          nop
-          nop
-	  bcf       port_b,0
-	  goto      loop
+	bsf port_b,0		; Bit0 in port_b setzen
+    nop					;
+    nop					;
+	bcf port_b,0		; Bit0 in port_b löschen
+	goto loop		
 
-	  end
+	end
 
 
 

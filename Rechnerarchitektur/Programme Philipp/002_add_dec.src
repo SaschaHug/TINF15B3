@@ -3,13 +3,18 @@
 ;**************************
 
 			device 16f84
-
+			
+;**************************
+; Definitionen
+;**************************
 zahl_1		equ 	15
 zahl_2		equ		31
+erg			equ     0ch
 
-			org		0
-			movlw	zahl_1
-			movwf	0ch
-			movlw 	zahl_2
-			addwf	0ch,w
+	org		0 			; ?
+	movlw	zahl_1		; zahl_1 in w laden
+	movwf	erg			; w in erg kopieren
+	movlw 	zahl_2		; zahl_2 in w laden
+	addwf	erg,w		; w zu erg addieren
+
 loop	goto	loop
