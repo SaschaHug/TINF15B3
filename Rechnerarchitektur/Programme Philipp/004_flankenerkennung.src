@@ -4,6 +4,9 @@
 
 			device 16f84
 
+;**************************
+;	Definitionen
+;**************************
 alter_pegel	equ		14
 flags		equ		13
 zaehler		equ 	12					; = 0ch erste freie Stelle
@@ -18,10 +21,24 @@ status 		equ		3
 
 			org 	0
 			
-			movf	port_a,w
-			andlw	00000001b
-			movwf	alter_pegel
+
+;**************************
+;	Initialisierung 
+;**************************
+
+			;##### Initialisierung fehlt #####
+
+
 			
+
+;**************************
+;	Programmcode
+;**************************		
+
+			movf	port_a,w
+			andlw	00000001b	
+			movwf	alter_pegel
+	
 loop		btfss	port_a,reset
 			goto 	loop1
 			clrf	zaehler
