@@ -1,0 +1,72 @@
+;**********************************************************************************************
+;       	Frequenzverdoppler
+;**********************************************************************************************
+
+	DEVICE	16F84
+
+;Konstanten
+Zaehler1	EQU	0CH
+Zaehler2	EQU	1CH
+T1	 		EQU	2CH
+T2	 		EQU	3CH
+RA			EQU 5
+carry		EQU 0
+
+;*************************************************************************************************
+	ORG 0
+	
+; Verantwortlich für "Suche nach Taktflanke"
+Loop1	BTFSC RA,0			
+		GOTO  Loop1
+Loop2	BTFSS RA,0
+		GOTO  Loop2
+
+; Überprüft, wie lange am Eingang eine "1" anliegt	
+Loop3	INCF  Zaehler1
+		BTFSC RA,0
+		GOTO  Loop3
+
+; Überprüft, wie lange am Eingang eine "0" anliegt			
+Loop4	INCF  Zaehler2
+		BTFSS RA,0
+		GOTO  Loop4
+
+; Zähler durch 2 teilen
+Loop5	addlw 0
+		;BCF   Zaehler2,0 	;geht nicht, Bug in der Software, deswegen addlw 0
+		RRF	  Zaehler1,W
+		MOVWF T1
+		
+; Ausgang negieren, da Ausgang bisher 0 ==> kann man direkt auf "1" setzen
+		BSF   RA,1		
+		
+; Zeit von T1 abwarten
+		Call Verz
+
+; Zähler durch 2 teilen
+		addlw 0
+		;BCF   Zaehler2,0	;geht nicht, Bug in der Software, deswegen addlw 0
+		RRF	  Zaehler2,W
+		MOVWF T1				; kann wieder benutzt werden, da T1 als Übergabeparameter für "Verz" benutzt wird
+		
+; Ausgang negieren, da Ausgang bisher 1 ==> kann man direkt auf "0" setzen
+		BCF   RA,1		
+		
+; Zeit von T1 abwarten
+		Call Verz
+		GOTO Loop5
+		
+		
+;**********************************Unterprogramm**************************************
+
+Verz
+		NOP					; damit es genauso viele Takte sind, wie beim Inkrement
+		DECFSZ T1			; T1--, wenn T1=0 wird die nächste Zeile übersprungen 
+		GOTO   Verz
+		Return
+		
+		; andere Variante:
+		;DECF T1
+		;BTFSS 3,2
+		;GOTO Verz
+		;Return

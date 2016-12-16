@@ -1,0 +1,73 @@
+;**************************
+;	Binaerzaehler
+;**************************
+
+			device 16f84
+
+alter_pegel	equ		14
+flags		equ		13
+zaehler		equ 	12					; = 0ch erste freie Stelle
+carry		equ		3
+inhibit		equ		2
+reset		equ		1
+takt		equ		0
+port_a		equ		5
+port_b		equ		6
+zero		equ		2
+status 		equ		3
+
+			org 	0
+			
+			movf	port_a,w
+			andlw	00000001b
+			movwf	alter_pegel
+			
+loop		btfss	port_a,reset
+			goto 	loop1
+			clrf	zaehler
+			goto	loop
+
+loop1		btfsc	port_a,inhibit
+			goto	loop
+			
+			call 	flanke
+			btfss	flags,0
+			goto	loop
+			
+			bcf		port_a,carry
+			incf	zaehler
+			movf	zaehler,w
+			movwf	port_b
+			btfsc	status,zero
+			bsf		port_a,carry
+			goto	loop
+
+			
+			
+			
+;---------------------------------------------------------------	
+;	Flankenerkennung
+;---------------------------------------------------------------	
+;;			movf	port_a,w
+;;			andlw	00000001b
+;;			movwf	alter_pegel
+;---------------------------------------------------------------
+flanke		bcf		flags,0
+			movf	port_a,w
+			andlw	00000001b
+			
+			xorwf	alter_pegel,w
+			btfsc	status,zero
+			return						; keine Flanke
+			movlw	00000001b			; Flanke da
+			xorwf	alter_pegel
+			btfsc	alter_pegel,0
+			bsf		flags,0				; steigene Flanke
+			return						; fallende Flanke
+;---------------------------------------------------------------			
+			
+			
+			
+			
+			
+			

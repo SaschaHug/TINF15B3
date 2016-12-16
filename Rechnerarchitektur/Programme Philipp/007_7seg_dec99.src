@@ -1,0 +1,137 @@
+;############# 7 Segment Anzeige mit Counter ################
+
+
+	DEVICE 16F84
+
+
+;Definitionen
+
+zaehler 	EQU 0CH
+temp	 	EQU 0DH
+limit		EQU 10
+start		EQU 0
+port_A		EQU 5
+tris_A		EQU 5
+port_B		EQU 6	;Ausgabe
+tris_B		EQU 6
+status		EQU 3	;Zur Auswertung der Ergebnisse
+carry		EQU 0	;Bit 0 des Statusregisters
+zero		EQU 2	;Zero Flag des Statusregisters
+pcl		EQU 2
+
+
+	ORG 0
+
+;*********** Port_B als Ausgang deklarieren ************************
+
+	BSF status, 5		;Schaltet um auf Bank1
+	MOVLW 00000000B		;Konstante in W
+	MOVWF tris_A		;Port_A ist nun ein Ausgang(0)
+	MOVWF tris_B		;Port_B ist nun ein Ausgang(0)
+	
+	BCF status,5		;Schaltet um auf Bank0
+
+	MOVLW start		;Zaehler mit 0 initialisieren
+	MOVWF zaehler
+
+	MOVLW start		;Temp auf 0 setzen
+	MOVWF temp	
+
+	
+LOOP	
+	movf zaehler, w		;Schreibt Inhalt vom Zaehler in den Akku - Veraendert Zero Flag! 
+	
+	andlw 	15		
+	call 	convert		;Zahl konvertieren
+	MOVWF	port_B		;Schreibe Ergebnis aus Unterfunkion (Bitmuster) in port_B
+
+	bcf 	port_A,0
+	bsf 	port_A,0
+	swapf 	zaehler,w		;HIGHNIBBLE <-> LOWNIBBLE
+
+	andlw 	15		
+	call 	convert
+	movwf 	port_B
+	bcf	port_A,1
+	bsf	port_A,1
+
+
+
+	INCF	zaehler		;Zaehler += 1
+
+	MOVLW	15		;Zaehler in W
+	ANDWF	zaehler,w	;W Mit 15 verunden
+	MOVWF	temp		;und in temp schreiben
+
+		
+	MOVLW	10		;Temp in W
+	
+	;SUBWF temp, w
+	XORWF	temp		;XOR von temp und Zaehler, wenn zero = 0 waren beide gleich
+	BTFSS	status,zero	;Ueberspringe, wenn ZERO FLAG gesetzt
+	GOTO 	LOOP	
+	
+				;temp ist ab hier 10
+	MOVLW	16		;16 in W
+	ADDWF	zaehler		;zaehler += 16 
+
+	MOVLW	0xF0		;Zaehler in W
+	ANDWF	zaehler		;Zaehler AND f0h
+	
+	MOVLW	0xA0		;Zaehler in W
+	;SUBWF zaehler,w
+	XORWF	zaehler,w	;ZAehler = A0h? ZERO FLAG FALLS JA	
+	BTFSS	status,zero	;Wenn beide gleich sind ueberspringe den nae Befehl
+
+	
+	
+	GOTO LOOP
+	
+	MOVLW start
+	MOVWF zaehler
+		
+	GOTo LOOP	
+		
+	
+
+;	MOVLW	start		;Ladet Startwert in AKKU		
+;	movLW 	limit		
+
+;	xorwf	zaehler, w
+;	btfsc	status, zero
+;	movwf	zaehler
+
+	
+	GOTO LOOP
+
+;################# UNTERPROGRAMM Bitmuster Konverter #############################
+
+convert		
+
+	addwf pcl
+	retlw	00111111B		; 0
+	retlw 	00000110B		; 1
+	retlw 	01011011B		; 2
+	retlw 	01001111B		; 3
+	retlw 	01100110B		; 4
+	retlw 	01101101B		; 5
+	retlw 	01111101B		; 6
+	retlw 	00000111B		; 7
+	retlw 	01111111B		; 8
+	retlw 	01101111B		; 9
+	retlw 	01110111B		; A
+	retlw 	01111100B		; b
+	retlw 	00111001B		; C
+	retlw 	01011110B		; d
+	retlw 	01111001B		; E
+	retlw 	01110001B		; F	;return F
+
+
+
+
+
+
+	
+
+
+

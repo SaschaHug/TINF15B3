@@ -1,0 +1,63 @@
+	DEVICE 16F84
+
+carry		equ		0
+zero		equ		2
+counter		equ		2		; Programmcounter
+status		equ		3
+tris_b		equ		6
+port_b		equ		6
+schalter	equ		0ch		; Schaltereingänge (für die Helligkeit)
+impuls		equ		0dh		; Eingang aus Frequenzgenerator
+count		equ		0eh
+
+	ORG 	0
+
+;Port_B zuweisen
+
+	BSF		status,5		; schaltet auf Bank1 (rechte Seite der Register auf Datasheet), 5. Element (TO) wird gesetzt
+	MOVLW	00011111b		; Zahl 0 in Register w --> kommt im nächsten Schritt in TRIS
+	MOVWF	tris_b			; Zahl aus w in TRIS schreiben
+	BCF		status,5		; zurück zu Bank0
+
+
+;Programmstart
+
+; Schalter einlesen
+loop1
+	movf	port_b,w		; Schalteingänge in w
+	andlw	00001111b		; verunden, damit nur noch Schalteingänge gelesen werden
+	movwf	schalter		; Schalterzustände speichern
+	btfsc	status,zero		; prüft ob Zerobit gesetzt ist
+	goto	loop1			; wird übersprungen, wenn Zerobit nicht gesetzt ist
+	
+	movf	port_b,w		; Inhalt von port_b wird in Akku geladen
+	andlw	00010000b		; Akku mit 00010000 verunden und wieder in Akku schreiben
+	xorlw	0				; Akku Exklusiv-Oder mit 0 => wenn alles 0, Zerobit = 1
+	btfsc	status,zero		; prüfen ob Zerobit gesetzt
+	goto 	loop1			; wenn Zerobit = 0, dann wird Befehl übersprungen
+
+	
+loop2
+	movlw	199				; 
+	call	verz
+	decf	schalter
+	btfss	status,zero
+	goto	loop2
+	
+	bsf		port_b,5
+	movlw	53
+	call	verz
+	bcf		port_b,5
+	goto 	loop1
+
+verz
+	movwf	count
+
+loop3	
+	decfsz	count
+	goto	loop3
+	Return
+
+
+	
+	

@@ -1,0 +1,52 @@
+;*********************************
+; Flankeninvertierung
+;*********************************
+	
+				DEVICE 16F84
+
+alterPegel	EQU 0CH
+RA			EQU	5
+Takt		EQU 0
+Ausgang		EQU	1
+			ORG	0
+
+	BSF		3,5			; Status, RP0 => Bank 1 einschalten
+	MOVWF	RA, Ausgang	; oder alternativ: BCF 5,1
+	BCF		3,5			; zurück auf Bank 0
+	
+	movf	RA,W		; Takt einlesen
+	andlw	1			; ungültige Bits ausblenden
+	movwf	alterPegel
+	
+LOOP
+	movf	RA,W
+	andlw	1
+	XORWF	alterPegel,w
+	BTFSS	3,2			
+	GOTO	LOOP
+	MOVLW	1
+	XORWF	alterPegel
+	BTFSS	alterPegel,0
+	GOTO	LOOP
+	MOVLW	2
+	XORWF	RA
+	GOTO 	LOOP
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

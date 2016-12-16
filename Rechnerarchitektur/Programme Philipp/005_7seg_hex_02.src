@@ -1,0 +1,84 @@
+; 7 Segment Anzeige
+
+		device	16f84
+
+; Konstanten
+zaehler		equ		0ch
+limit		equ		16	; weil erst nach dem Inkrementieren geprüft wird, sonst 15
+						; dann Prüfung aber vor dem Inkrementieren
+start		equ		0
+port_b		equ		6	; hier kommt Augabe --- TRIS-Register regelt Richtung der Daten (I/O)
+tris_b		equ		6
+status		equ		3	; zur Auswertung der Ergebnisse
+carry		equ		0	; im Statusregister die Bits
+zero		equ		2	
+pcl			equ		2	; zum Springen in der Liste
+
+			org		0
+
+; port_b zum Ausgaberegister machen ##############################################################################
+
+			bsf 	status, 5		;schaltet um auf Bank 1
+			movlw	00000000b
+			movwf	tris_b			; schaltet Datenrichtung von port_b komplett auf Ausgang
+			
+			; Alternative:
+			; movwf		6
+			; movwf		port_b
+			; clrf		port_b / tris_b / 6
+			
+			bcf		status, 5		; schaltet um auf Bank 0
+;#################################################################################################################
+
+			movlw	start
+			movwf	zaehler			; Initialisieren -- setzt zeahler und start auf 0 (hier)
+			
+loop
+			call	convert			; ruft Unterfunktion auf
+			xorlw	255
+			movwf	port_b			; schreibt Ergebnis aus Unterfunktion (Bitmuster) in port_b
+			incf 	zaehler			; Zähler wird um 1 erhöht
+			movlw 	start			; Startwert in Akku (w) laden
+			btfsc	zaehler, 4		; ist 4.tes Bit gesetzt (=16) setzt zaehler auf Start zurück
+			movwf	zaehler			; " CLRF zaehler wuerde zaehler komplett auf 0 setzen
+			
+			; Alternative 1 für Vergleiche (beliebiger Anfang)
+			; movlw limit			; Limit in Akku (w) laden
+			; xorwf	zaehler, w		; xor erzeugt 0, wenn beide Werte gleich sind
+			; movlw	start
+			; btfsc	status, zero
+			; movwf	zaehler			; ist limit erreicht, mache das hier
+			
+			; Alternative 2 für Vergleiche
+			; movlw limit	
+			; subwf zaehler, w		; Subtraktion erzeugt 0, wenn beide Werte gleich sind	
+			;						; ist Ergebnis einer Operation 0 wird Zero Flag gesetzt
+			; movlw	start
+			; btfsc	status, zero
+			; movwf	zaehler			; ist limit erreicht, mache das hier (hier: setzt zaehler zurueck auf start)
+			; **hier gehts weiter
+			
+			goto loop
+
+; Unterprogramm -Liste- gibt Bitmuster für Anzeige zurück ########################################################
+convert
+			movf 	zaehler, w			; schreibt Inhalt vom zaehler in den Akku (w) - veraendert Zero Flag!!!
+			addwf	pcl
+			retlw 00111111B				; gibt 0 bei zaehler = 0
+			retlw 00000110B
+			retlw 01011011B
+			retlw 01001111B
+			retlw 01100110B
+			retlw 01101101B
+			retlw 01111101B
+			retlw 00000111B
+			retlw 01111111B
+			retlw 01101111B
+			retlw 01110111B
+			retlw 01111100B
+			retlw 00111001B
+			retlw 01011110B
+			retlw 01111001B
+			retlw 01110001B				; gibt F zurück
+			
+			

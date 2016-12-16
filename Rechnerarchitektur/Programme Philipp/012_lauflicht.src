@@ -1,0 +1,36 @@
+	DEVICE 16F84
+
+;Register
+
+RA equ 5
+RB equ 6
+
+;initialisiere Variablen
+
+	bsf 3,5 ;Status, RP0 -> auf Bank 1
+	clrf RA
+	bcf 3,5 ;zurück auf Bank 0
+	
+	movlw 00000001B
+	movwf RB
+	
+START
+	; Ist Schalter gesetzt?
+	
+	btfss RA,0
+	GOTO START
+	
+	
+	
+	; Nexte LED an, aktuelle aus via BIT-shift
+	RLF RB
+	
+	
+	
+	; Überprüfung ob LED 7 ( Bit Nr. 7) gesetzt ist und falls ja, wird wieder LED Nr. 1 aktiviert
+	
+	btfss RB,7
+	GOTO START
+	movlw 00000001B
+	movwf RB
+	GOTO START

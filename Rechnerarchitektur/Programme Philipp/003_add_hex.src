@@ -1,0 +1,16 @@
+;**************************
+;	16 bit Addition
+;**************************
+
+			device 16f84
+
+zahl_11		equ 	15h
+zahl_12		equ		ffh
+zahl_2		equ		1024
+
+			org		0
+			movlw	zahl_1
+			movwf	0ch
+			movlw 	zahl_2
+			addwf	0ch,w
+loop	goto	loop

@@ -1,0 +1,46 @@
+;*******************************************************************************************
+;					SimTest00.SRC
+;
+;*******************************************************************************************
+          
+;Das Programm initialisiert RB0 als Ausgang und l?sst dort eine LED blinken
+
+	  DEVICE    16F84
+          CONFIG    WDT_ON
+
+; user defined symbols
+Port_B     EQU       6
+status     equ       3
+rp0        Equ       5
+
+
+          org     0
+
+COLD    
+START     bsf 3,5			;RP0 auf 1 => Bank 1 anw?hlen
+	  movlw     11111110B		;TRIS-Maske
+	  movwf     PORT_B		;jetzt ist RB0 Ausgang, der Rest Eingan
+	  bcf status,rp0
+	  
+
+loop
+	  bsf       port_b,0
+          nop
+          nop
+	  bcf       port_b,0
+	  goto      loop
+
+	  end
+
+
+
+
+
+
+
+
+
+
+
+
+
