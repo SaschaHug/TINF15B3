@@ -1,0 +1,51 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                           ;
+; Lauflicht  Rücklaufend                                                                               ;
+; Gabriel Zachmann                                                                          ;
+; 17.12.2016                                                                                ;
+;                                                                                           ;
+; Alle Angaben ohne Gewähr                                                                  ;
+;                                                                                           ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	Device 16F84
+
+STATUS EQU 3
+BANK equ 5
+PortA equ 5
+PortB equ 6
+HALT equ PortA, 1
+StartStop equ PortA, 0
+Richtung equ 0CH
+
+init	bsf 	status, bank 	;schaltet auf Bank1
+		clrf	PortB			;setzt TrisB auf 0, 0===Ausgang
+								;PortA ist Eingang, da das der default value ist (muss nicht explizit gesetzt werden)
+		bcf 	status, bank 	;schaltet auf Bank0
+		
+start	clrf	PortB			;setzt PortB auf 0 (alle LEDs aus)
+		clrf	Richtung		;setzt Richtung auf 0
+		bsf		Richtung, 0		;setzt Richtung auf 1
+		bcf		status, 0		;setzt carry flag auf 1 (beim shiften wird der Wert des carryflags auf LED0 geshiftet)
+		bsf		PortB, 0		;schaltet LED0 ein
+
+startC	btfsc	StartStop		;Wenn der Schalter geschlossen ist, ist StartStop = 0
+		goto 	start			;Wenn StartStop = 1 (also Schalter offen): gehe zurück zu start
+
+pause	btfsc	HALT			;Wenn der Schalter geöffnet ist, ist HALT = 1
+		goto 	startC			;Wenn HALT = 1 (also Schalter offen): gehe zurück zum Start Check
+	
+shift							;Wenn beide Schalter geschlossen sind wander
+		btfsc	PortB, 7		;Wenn LED7 leuchtet, Richtung ändern
+		incf	Richtung		;richtung +1 ==1
+		btfsc	PortB, 0		;Wenn LED0 leuchtet, Richtung ändern
+		decf	Richtung		;richtung -1 ==0
+		btfss	Richtung, 0		;Überprüfen der Richtung	
+		rlf		PortB			;Wenn Richtung=0 nach links shiften
+		btfsc	Richtung, 0		;Überprüfe Richtung
+		rrf		PortB			;Wenn Richtung=1 nach rechts shiften
+		goto	startC			;And we start again
+		
+
+		
+		end
