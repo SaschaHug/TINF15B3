@@ -1,8 +1,8 @@
-# Kissinger Brötchen
+# Kissinger BrÃ¶tchen
 
 ##Zutaten
 * 300 g 	Mehl
-* 50 g 	Haselnüsse, gemahlene
+* 300 g 	HaselnÃ¼sse, gemahlene
 * 2 TL 	Backpulver
 * 300 g 	Puderzucker
 * 2 Prise(n) 	Salz
@@ -10,22 +10,22 @@
 *  	Zimt
 * 200 g 	Butter
 
-Für die Füllung:
-*  	Aprikosenkonfitüre (Himbeere geht auch) 
+FÃ¼r die FÃ¼llung:
+*  	AprikosenkonfitÃ¼re (Himbeere geht auch) 
 
-Für die Garnitur:
-* 500 g 	Kuvertüre, dunkle
-* 300 g 	Haselnüsse, gemahlene
-* 96  	Walnüsse, halbe 
+FÃ¼r die Garnitur:
+* 500 g 	KuvertÃ¼re, dunkle
+* 300 g 	HaselnÃ¼sse, gemahlene
+* 96  	WalnÃ¼sse, halbe 
 
-Für den Teig Mehl, Haselnüsse und Backpulver in einer Schüssel mischen. In die Mitte eine Mulde drücken. 
-Puderzucker, Salz, Zimt und Ei hineingeben. Butter in Flöckchen auf dem Mehlrand verteilen. 
-Schnell einen glatten Teig kneten. 30 Min. zugedeckt im Kühlschrank kalt werden lassen.
-Mehl auf die Arbeitsfläche stäuben. Teig darauf etwa 0,5cm dick ausrollen. 
-Mit einem Schnapsgläschen runde Plätzchen ausstechen.
-Backblech bitte einfetten, Plätzchen darauf geben. 
-Backzeit 10 Min. bei ca.220° Grad. Blech aus dem Ofen nehmen, Plätzchen vom Blech lösen. 
-Aprikosenmarmelade in einem Schüsselchen glatt rühren. 
-Auf die Hälfte der Plätzchen die Marmelade verteilen und mit je einem leeren Plätzchen belegen.
-Für die Garnierung Kuvertüre im Wasserbad auflösen Plätzchen damit rundum überziehen. 
-Zuletzt die Ränder in den geriebenen Haselnüssen rollen. Auf jedes Plätzchen eine Walnusshälfte drücken. 
+FÃ¼r den Teig Mehl, HaselnÃ¼sse und Backpulver in einer SchÃ¼ssel mischen. In die Mitte eine Mulde drÃ¼cken. 
+Puderzucker, Salz, Zimt und Ei hineingeben. Butter in FlÃ¶ckchen auf dem Mehlrand verteilen. 
+Schnell einen glatten Teig kneten. 30 Min. zugedeckt im KÃ¼hlschrank kalt werden lassen.
+Mehl auf die ArbeitsflÃ¤che stÃ¤uben. Teig darauf etwa 0,5cm dick ausrollen. 
+Mit einem SchnapsglÃ¤schen runde PlÃ¤tzchen ausstechen.
+Backblech bitte einfetten, PlÃ¤tzchen darauf geben. 
+Backzeit 10 Min. bei ca.220Â° Grad. Blech aus dem Ofen nehmen, PlÃ¤tzchen vom Blech lÃ¶sen. 
+Aprikosenmarmelade in einem SchÃ¼sselchen glatt rÃ¼hren. 
+Auf die HÃ¤lfte der PlÃ¤tzchen die Marmelade verteilen und mit je einem leeren PlÃ¤tzchen belegen.
+FÃ¼r die Garnierung KuvertÃ¼re im Wasserbad auflÃ¶sen PlÃ¤tzchen damit rundum Ã¼berziehen. 
+Zuletzt die RÃ¤nder in den geriebenen HaselnÃ¼ssen rollen. Auf jedes PlÃ¤tzchen eine WalnusshÃ¤lfte drÃ¼cken. 
