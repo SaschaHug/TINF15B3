@@ -1,3 +1,5 @@
+; Dieses Programm sollte analysiert werden
+; es rechnet Lwert1 * 5
 
 	Device 16F84
 

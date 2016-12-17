@@ -1,5 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Da gibts ne Zeichnung für @Waldemar
+; 
+; Verknüpfung von zwei 4bit zahlen 
 ;
 ; Gabriel Zachmann
 ; 12.12.16
@@ -30,50 +32,50 @@ init		bsf 	status, bank 	;schaltet auf Bank1
 									;PortB ist Eingang, da das der default value ist (muss nicht explizit gesetzt werden)
 			bcf 	status, bank 	;schaltet auf Bank0
 			
-go			movf	PortB, w
-			ANDlw	15
-			movwf	A
-			movf	PortB, w	
-			ANDlw	11110000B
-			movwf	B
-			swapf	B
+go			movf	PortB, w		;lädt PortB in w
+			ANDlw	15				;nur untere 4bit zählen
+			movwf	A				;nach A speichern
+			movf	PortB, w		; portB in w laden
+			ANDlw	11110000B		; nur obere 4 bit zählen
+			movwf	B				; in B speichern
+			swapf	B				; obere 4bit nach unten schieben
 			
-			movf	PortA, w
-			movwf	S
+			movf	PortA, w		; PortA in w laden
+			movwf	S				; w (also PortA) in s speichern
 			rlf		S
 			rlf		S
-			rlf		S
-			movf	S, w 
-			ANDlw	00000011B
-			addwf	pcl
+			rlf		S				; bit6 und bit7 auf 0 und 1 schieben
+			movf	S, w 			; ergebnis nach w schreiben
+			ANDlw	00000011B		; nur untere 2 bits sind relevant
+			addwf	pcl				; wert zum pc addieren --> Sprungtabelle
 			goto	Akomp
 			goto	AxorB
 			goto	AorB
 			goto	AandB
 			
 AandB		movf	A, w
-			andwf	B, w
-			iorlw	11000000B
-			movwf	PortA
-			goto 	go
+			andwf	B, w			; A mit B in w verunden
+			iorlw	11000000B		; Schalterbits 6 und 7 entsprechend setzen wie sie davor waren
+			movwf	PortA			; Ergebnis auf PortA ausgeben
+			goto 	go				; and again
 
 AorB		movf	A, w
-			iorwf	B, w
-			iorlw	10000000B
-			movwf	PortA
-			goto 	go
+			iorwf	B, w			; A mit B in w verodern
+			iorlw	10000000B		; Schalterbits 6 und 7 entsprechend setzen wie sie davor waren
+			movwf	PortA			; Ergebnis auf PortA ausgeben
+			goto 	go				; wir stecken in einer Schleife
 			
 AxorB		movf	A, w
-			xorwf	B, w
-			andlw	3FH
-			iorlw	01000000B
-			movwf	PortA
-			goto 	go
+			xorwf	B, w			; A und B in w verxoren
+			andlw	3FH				; nur untere 6 bit gülitg (obere 2 bits auf 0)
+			iorlw	01000000B		; Schalterbits 6 und 7 entsprechend setzen wie sie davor waren
+			movwf	PortA			; Ergebnis auf PortA ausgeben
+			goto 	go				; loop it
 			
-Akomp		comf	A
-			incf	A
-			movf	A, w
-			andlw	0FH
-			;iorlw	0
-			movwf 	PortA
-			goto 	go
+Akomp		comf	A				; 1er Komplement von A
+			incf	A				; +1 makes it a 2erKomplement
+			movf	A, w			; nach w
+			andlw	0FH				; nur utnere 4 bit gültig
+			;iorlw	0				; Schalterbits 6 und 7 entsprechend setzen wie sie davor waren
+			movwf 	PortA			; Ergebnis auf PortA ausgeben
+			goto 	go				; round and round it goes

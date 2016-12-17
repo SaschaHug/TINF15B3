@@ -1,3 +1,6 @@
+; Nutzung des FSR registers zur indirecten Addressierung
+; werte in speicher schreiben und addieren
+
 	Device 16F84
 
 STATUS EQU 3
@@ -8,20 +11,20 @@ pcl equ 2
 FSR equ 4
 indirect equ 0
 
-top		movlw 10H
-		movwf FSR
-		clrw
-loop	movwf indirect
-		addlw 1
-		incf FSR
-		btfss FSR, 5
-		goto loop
-sum		movlw 10H
-		movwf FSR
-		clrw
-sumloop	addwf indirect, w
-		incf FSR
-		btfss FSR, 5
-		goto sumloop
+top		movlw 10H				; lädt 10H in w
+		movwf FSR               ; speichert Addresse 10H im FSR
+		clrw                    ; w auf 0
+loop	movwf indirect          ; speichert wert von w an der Addresse die aktuell im FSR steht
+		addlw 1                 ; w um eins erhöhen
+		incf FSR                ; FSR um ein(e Addresse) erhöhen
+		btfss FSR, 5            ; Bedingung checken
+		goto loop               ; wiederholen
+sum		movlw 10H               ; wieder startaddresse in w laden
+		movwf FSR               ; um sie dann ins FSR zu schieben
+		clrw                    ; und w auf 0
+sumloop	addwf indirect, w       ; wert der an der Addresse steht, die in FSR steht, zu w addieren
+		incf FSR                ; FSR incrementieren
+		btfss FSR, 5            ; bedingung checken
+		goto sumloop            ; und wiederholen
 		
 	end

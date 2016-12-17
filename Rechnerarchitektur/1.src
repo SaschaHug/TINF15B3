@@ -1,3 +1,5 @@
+; Binärzähler mit BCD und 7Segment Anzeige
+
 	Device 16F84
 
 STATUS EQU 3

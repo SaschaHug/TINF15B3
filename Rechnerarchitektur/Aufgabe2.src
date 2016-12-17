@@ -1,3 +1,5 @@
+; Codeumsetzter von Binär auf 7Segment
+
 	Device 16F84
 	
 STATUS EQU 3
@@ -14,7 +16,7 @@ pcl equ 2
 	
 	
 	
-anfang	movfw  PortA	;4       ;index ins w-register
+anfang	movfw  PortA	;Eingabe ins w-register
 		call tabelle  ; in die Tabelle springen
 		movwf portB     ;Wert aus tabelle auf Port ausgeben
 		goto anfang
@@ -23,8 +25,8 @@ tabelle
 		andlw  15     ;nur untere 4 Bits sind gültig
 		addwf  pcl    ;Index zum Programmzägler addieren
 		retlw  00111111B	;0      ;wenn index 0 war, wird dieser Wert zurückgegeben
-		retlw  00000110B	;1      ;bei Index 1 dieser wert. Die werte 0,1,2 usw müssen
-		retlw  01011011B	;2      ;durch die gewümschte Bitkombination ersetzt werden
+		retlw  00000110B	;1      ;bei Index 1 dieser wert. 
+		retlw  01011011B	;2      
 		retlw  01001111B	;3 
 		retlw  01100110B	;4 
 		retlw  01101101B	;5 

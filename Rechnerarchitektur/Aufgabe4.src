@@ -1,3 +1,6 @@
+; Frequenzverdoppler
+; 
+
 	Device 16F84
 
 STATUS EQU 3
@@ -12,10 +15,10 @@ f equ 0EH
 input equ 0
 output equ 1
 
-init	bsf status, bank ;schaltet auf Bank1
-		bsf PortA, INPUT ;RA0 Eing in TrisA
-		bcf PortA, OUTPUT ;RA1 Ausg
-		bcf status, bank ;schaltet auf Bank0
+init	bsf status, bank 	;schaltet auf Bank1
+		bsf PortA, INPUT 	;RA0 Eing in TrisA
+		bcf PortA, OUTPUT 	;RA1 Ausg
+		bcf status, bank 	;schaltet auf Bank0
 		movLw	0
 		movwf	counter
 top		movf   flanke, w	;lädt vorherigen flankenwert in w
@@ -36,7 +39,7 @@ back
 		movwf	f
 		rrf		f
 		bcf		f, 7
-		;durch 2 geteilt
+							;durch 2 geteilt
 		movlw	00000001B
 		xorwf 	PortA
 recount

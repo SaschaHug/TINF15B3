@@ -1,3 +1,5 @@
+; Frequenzhalbierer
+
 	Device 16F84
 
 STATUS EQU 3
@@ -10,10 +12,10 @@ flanke equ 0CH
 input equ 0
 output equ 1
 
-init	bsf status, bank ;schaltet auf Bank1
-		bsf PortA, INPUT ;RA0 Eing in TrisA
-		bcf PortA, OUTPUT ;RA1 Ausg
-		bcf status, bank ;schaltet auf Bank0
+init	bsf status, bank 	;schaltet auf Bank1
+		bsf PortA, INPUT 	;RA0 Eing in TrisA
+		bcf PortA, OUTPUT 	;RA1 Ausg
+		bcf status, bank 	;schaltet auf Bank0
 top		movf   flanke, w	;lädt vorherigen flankenwert in w
 		xorwf   PortA, w	;xor mit PortA um Flankenwechsel zu erkennen
 		andLw   00000001B	;abschneiden der irrelevanten bits
@@ -24,6 +26,15 @@ top		movf   flanke, w	;lädt vorherigen flankenwert in w
 		btfss   Flanke, 0	;wenn bit0 = 0, dann fallende flanke
 		goto   top			;also goto top
 							;steigende Flanke, also weitermachen
+
+		;schlaue Lösung
+		movLw 00000010B
+		xorwf PortA
+		goto top
+		
+		end
+		
+		
 		;primitive lösung
 		;btfss PortA, OUTPUT	;aktueller Pegel checken
 		;goto outputH		;wenn low dann high 
@@ -33,8 +44,3 @@ top		movf   flanke, w	;lädt vorherigen flankenwert in w
 ;		goto top
 ;outputL	bcf PortA, OUTPUT
 ;		goto top
-
-		;schlaue Lösung
-		movLw 00000010B
-		xorwf PortA
-		goto top

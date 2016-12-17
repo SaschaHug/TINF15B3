@@ -1,4 +1,4 @@
-
+; Diese Programm dauert 250µs
 	Device 16F84
 
 STATUS EQU 3
